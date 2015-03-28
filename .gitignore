@@ -1,0 +1,25 @@
+#Mac OS X file
+.DS_Store
+
+# Index file
+/index.php
+
+# Cache Files
+/application/cache/*
+/application/cache/!index.html
+/application/cache/!.htaccess
+
+# Database config file
+/application/config/database.php
+
+# Setup Folder
+/application/extensions/setup
+/application/extensions/setup_
+
+# Log file
+/application/logs/log.php
+/application/logs/!index.html
+
+# Image Thumb Files
+/assets/img/thumbs/*
+!/assets/img/thumbs/index.html
