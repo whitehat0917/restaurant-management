@@ -8,7 +8,7 @@ class Messages_model extends TI_Model {
 
             if ($filter['filter_folder'] === 'inbox' OR $filter['filter_folder'] === 'archive') {
                 $this->db->join('message_recipients', 'message_recipients.message_id = messages.message_id', 'left');
-                $this->db->where('message_recipients.key', 'staff_id');
+                $this->db->where('message_recipients.item', 'staff_id');
                 $this->db->where('message_recipients.value', $filter['filter_staff']);
                 $this->db->where('message_recipients.status', ($filter['filter_folder'] === 'archive') ? '0' : '1');
                 $this->db->where('messages.status', '1');
@@ -36,7 +36,7 @@ class Messages_model extends TI_Model {
             }
         } else if (!empty($filter['customer_id']) AND is_numeric($filter['customer_id'])) {
             $this->db->join('message_recipients', 'message_recipients.message_id = messages.message_id', 'left');
-            $this->db->where('message_recipients.key', 'customer_id');
+            $this->db->where('message_recipients.item', 'customer_id');
             $this->db->where('message_recipients.value', $filter['customer_id']);
             $this->db->where('message_recipients.status', '1');
             $this->db->where('messages.send_type', 'account');
@@ -61,7 +61,7 @@ class Messages_model extends TI_Model {
 
                 if ($filter['filter_folder'] === 'inbox' OR $filter['filter_folder'] === 'archive') {
                     $this->db->join('message_recipients', 'message_recipients.message_id = messages.message_id', 'left');
-                    $this->db->where('message_recipients.key', 'staff_id');
+                    $this->db->where('message_recipients.item', 'staff_id');
                     $this->db->where('message_recipients.value', $filter['filter_staff']);
                     $this->db->where('message_recipients.status', ($filter['filter_folder'] === 'archive') ? '0' : '1');
                     $this->db->where('messages.status', '1');
@@ -89,7 +89,7 @@ class Messages_model extends TI_Model {
                 }
             } else if (!empty($filter['customer_id']) AND is_numeric($filter['customer_id'])) {
                 $this->db->join('message_recipients', 'message_recipients.message_id = messages.message_id', 'left');
-                $this->db->where('message_recipients.key', 'customer_id');
+                $this->db->where('message_recipients.item', 'customer_id');
                 $this->db->where('message_recipients.value', $filter['customer_id']);
                 $this->db->where('message_recipients.status', '1');
                 $this->db->where('messages.send_type', 'account');
@@ -184,13 +184,13 @@ class Messages_model extends TI_Model {
                 $this->db->join('staffs', 'staffs.staff_id = messages.sender_id', 'left');
 
                 if (is_numeric($user_id)) {
-                    $this->db->where('message_recipients.key', 'staff_id');
+                    $this->db->where('message_recipients.item', 'staff_id');
                     $this->db->where('message_recipients.value', $user_id);
                 }
             } else {
                 $this->db->join('customers', 'customers.customer_id = message_recipients.value', 'left');
                 $this->db->where('messages.send_type', 'account');
-                $this->db->where('message_recipients.key', 'customer_id');
+                $this->db->where('message_recipients.item', 'customer_id');
                 $this->db->where('message_recipients.value', $user_id);
             }
 
@@ -202,9 +202,9 @@ class Messages_model extends TI_Model {
 	public function getUnreadCount($user_id = '') {
 		if (is_numeric($user_id)) {
 			if (APPDIR === ADMINDIR) {
-                $this->db->where('message_recipients.key', 'staff_id');
+                $this->db->where('message_recipients.item', 'staff_id');
             } else {
-                $this->db->where('message_recipients.key', 'customer_id');
+                $this->db->where('message_recipients.item', 'customer_id');
             }
 
             $this->db->where('message_recipients.value', $user_id);
@@ -246,9 +246,9 @@ class Messages_model extends TI_Model {
             $this->db->where_in('message_id', $message_id);
 
             if (APPDIR === ADMINDIR) {
-                $this->db->where('key', 'staff_id');
+                $this->db->where('item', 'staff_id');
             } else {
-                $this->db->where('key', 'customer_id');
+                $this->db->where('item', 'customer_id');
             }
 
 			$query = $this->db->update('message_recipients');
@@ -362,9 +362,9 @@ class Messages_model extends TI_Model {
                     $this->db->set('status', $status);
 
                     if (in_array($send['recipient'], array('all_staffs', 'staff_group', 'staffs'))) {
-                        $this->db->set('key', 'staff_' . $suffix);
+                        $this->db->set('item', 'staff_' . $suffix);
                     } else {
-                        $this->db->set('key', 'customer_' .$suffix);
+                        $this->db->set('item', 'customer_' .$suffix);
                     }
 
                     if (!($query = $this->db->insert('message_recipients'))) {

@@ -104,6 +104,13 @@ if ( ! function_exists('admin_url'))
         return get_instance()->config->root_url(ADMINDIR.'/'.$uri, $protocol);
 	}
 }
+if ( ! function_exists('roott_url'))
+{
+	function roott_url($uri = '', $protocol = NULL)
+	{
+        return get_instance()->config->root_url(ADMINDIR.'/'.$uri, $protocol);
+	}
+}
 
 // ------------------------------------------------------------------------
 
