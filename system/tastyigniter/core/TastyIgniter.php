@@ -7,7 +7,7 @@
  *
  */
 	define('CI_VERSION', '3.0-dev');
-	define('TI_VERSION', '1.3-beta');
+	define('TI_VERSION', 'v1.3-beta');
 
 	// Path to the root folder
 	defined('ROOTPATH') OR define('ROOTPATH', str_replace(SYSDIR.'/', '', BASEPATH));
@@ -340,7 +340,7 @@ if ( ! is_php('5.4'))
 	// Load the main or admin base controller class
 	if (APPDIR === ADMINDIR) {
 		require_once IGNITEPATH.'core/Admin_Controller.php';
-	} else if (APPDIR === MAINDIR) {
+	} else {
 		require_once IGNITEPATH.'core/Main_Controller.php';
     }
 

@@ -18,20 +18,20 @@
 				<div class="row">
 					<div class="col-xs-12">
 						<ul class="nav nav-pills nav-justified thumbnail">
-							<li class="step-one <?php if ($checkout_step === 'one') { echo 'active'; } else if ($checkout_step === 'two') { echo 'link'; } else { echo 'disabled'; }; ?>">
-								<a>
+							<li class="<?php echo ($checkout_step === 'one') ? 'active' : 'disabled'; ?>">
+								<a <?php echo ($checkout_step === 'one') ? 'href="'.site_url('checkout').'"' : 'href="#checkout"'; ?> >
 									<h4 class="list-group-item-heading"><?php echo lang('text_step_one'); ?></h4>
 									<p class="list-group-item-text"><?php echo lang('text_step_one_summary'); ?></p>
 								</a>
 							</li>
-							<li class="step-two <?php echo ($checkout_step === 'two') ? 'active' : 'disabled'; ?>">
-								<a>
+							<li class="<?php echo ($checkout_step === 'two') ? 'active' : 'disabled'; ?>">
+								<a href="#payment">
 									<h4 class="list-group-item-heading"><?php echo lang('text_step_two'); ?></h4>
 									<p class="list-group-item-text"><?php echo lang('text_step_two_summary'); ?></p>
 								</a>
 							</li>
-							<li class="step-three disabled">
-								<a>
+							<li class="disabled">
+								<a href="#confirmation">
 									<h4 class="list-group-item-heading"><?php echo lang('text_step_three'); ?></h4>
 									<p class="list-group-item-text"><?php echo lang('text_step_three_summary'); ?></p>
 								</a>
@@ -205,7 +205,7 @@
 
 								<div class="form-group wrap-top">
 									<label for=""><?php echo lang('label_comment'); ?></label>
-									<textarea name="comment" id="comment" rows="5" class="form-control"><?php echo set_value('comment', $comment); ?></textarea>
+									<textarea name="comment" id="comment" rows="5" class="form-control"></textarea>
 									<?php echo form_error('comment', '<span class="text-danger">', '</span>'); ?>
 								</div>
 							</div>
@@ -274,16 +274,6 @@ $(document).ready(function() {
         }
 	});
 
-    $('.step-one.link a').on('click', function() {
-        $(this).removeClass('link');
-        $('.step-two').removeClass('active').addClass('disabled');
-        $('.step-one').addClass('active');
-        $('input[name="checkout_step"]').val('one');
-        $('#checkout').fadeIn();
-        $('#payment').fadeOut();
-        $('.side-bar .buttons .btn').text('<?php echo lang('button_payment'); ?>');
-
-    });
 //    $('input[name="order_type"]:checked').trigger('change');
 });
 //--></script>
