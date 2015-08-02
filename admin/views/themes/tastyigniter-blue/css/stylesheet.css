@@ -2342,14 +2342,15 @@ height: 25px;
 }
 .progress > .progress-type {
 position: absolute;
-right: 0px;
-padding: 3px 10px 3px 10px;
+left: 0px;
+padding: 3px 30px 3px 10px;
+color: rgb(255, 255, 255);
+background-color: rgba(25, 25, 25, 0.1);
 }
 .progress > .progress-completed {
 position: absolute;
-left: 0px;
+right: 0px;
 padding: 3px 10px 2px;
-color: #FFF;
 }
 
 

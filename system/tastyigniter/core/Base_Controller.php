@@ -21,13 +21,11 @@ class Base_Controller extends MX_Controller {
 
         $this->load->library('alert');
 
-        // Load database if connected
+        // Load database and system configuration from database
         $DATABASE = $this->load->database('default', TRUE);
         if ($DATABASE->conn_id !== FALSE) {
-            // Load system configuration from database
             $this->config->load_db_config();
 
-            // Load extension library
             $this->load->library('extension');
 
             // Load template library
@@ -41,10 +39,10 @@ class Base_Controller extends MX_Controller {
         if (ENVIRONMENT === 'production') {
 
             // Redirect to root url if app has already been set up
-            if (APPDIR === 'setup' AND $this->uri->rsegment(1) !== 'success' AND TI_VERSION === $this->config->item('ti_version')) redirect(root_url('setup/success'));
+            if (APPDIR === 'setup' AND TI_VERSION === $this->config->item('ti_version')) redirect(root_url());
 
             // Saving queries can vastly increase the memory usage, so better to turn off in production
-            if ($DATABASE->conn_id !== FALSE) $this->db->save_queries = FALSE;
+            $this->db->save_queries = FALSE;
 
             // Show maintenance message if maintenance is enabled
             if ($this->maintenanceEnabled()) {
@@ -52,7 +50,7 @@ class Base_Controller extends MX_Controller {
             }
 
         } else if (ENVIRONMENT === 'development') {
-            if ($DATABASE->conn_id !== FALSE) $this->db->db_debug = TRUE;
+            $this->db->db_debug = TRUE;
 
             // Enable profiler for development environments.
             if ( ! $this->input->is_ajax_request()) {
