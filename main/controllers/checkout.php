@@ -25,26 +25,26 @@ class Checkout extends Main_Controller {
 	public function index() {
 		if ( ! $this->cart->contents()) { 														// checks if cart contents is empty
 			$this->alert->set('alert', $this->lang->line('alert_no_menu_to_order'));
-            redirect(referrer_url());																	// redirect to menus page and display error
+            redirect(restaurant_url());																	// redirect to menus page and display error
 		}
 
 		if ($this->config->item('location_order') === '1' AND ! $this->location->hasSearchQuery()) { 														// else if local restaurant is not selected
             $this->alert->set('alert', $this->lang->line('alert_no_selected_local'));
-            redirect(referrer_url());																	// redirect to menus page and display error
+            redirect(restaurant_url());																	// redirect to menus page and display error
         }
 
         if ( ! $this->location->isOpened() AND $this->config->item('future_orders') !== '1') { 													// else if local restaurant is not open
             $this->alert->set('alert', $this->lang->line('alert_location_closed'));
-            redirect(referrer_url());																	// redirect to previous page and display error
+            redirect(restaurant_url());																	// redirect to previous page and display error
 		}
 
 		if (( ! $this->location->hasDelivery() AND ! $this->location->hasCollection()) AND $this->config->item('location_order') === '1') { 													// else if local restaurant is not open
 			$this->alert->set('alert', $this->lang->line('alert_order_unavailable'));
-            redirect(referrer_url());																	// redirect to previous page and display error
+            redirect(restaurant_url());																	// redirect to previous page and display error
 		}
 
 		if ($this->location->orderType() === '1' AND ! $this->location->checkMinimumOrder($this->cart->total())) { 							// checks if cart contents is empty
-            redirect(referrer_url());																	// redirect to previous page and display error
+            redirect(restaurant_url());																	// redirect to previous page and display error
 		}
 
 		if ( ! $this->customer->islogged() AND $this->config->item('guest_order') !== '1') { 											// else if customer is not logged in
@@ -67,7 +67,7 @@ class Checkout extends Main_Controller {
 
         $data['_action'] = site_url('checkout');
 
-		if (isset($order_data['order_id']) OR (isset($order_data['customer_id']) AND $order_data['customer_id'] !== $this->customer->getId())) {
+		if (isset($order_data['order_id']) OR (!empty($order_data['customer_id']) AND $order_data['customer_id'] !== $this->customer->getId())) {
             $order_data = array();
             $this->session->unset_userdata('order_data');
 		}
@@ -376,12 +376,12 @@ class Checkout extends Main_Controller {
             $order_data['comment'] 		= $this->input->post('comment');						// retrieve comment value from $_POST data if set and convert to integer then add to order_data array
 
             if ($this->input->post('order_type') === '1') {
-                foreach ($this->input->post('address') as $key => &$address) {
-                    $address['country'] = $address['country_id'];
+                foreach ($this->input->post('address') as $key => $address) {
+                    $_POST['address'][$key]['country'] = $address['country_id'];
 
                     !empty($address['address_id']) OR $address['address_id'] = NULL;
 
-                    $address['address_id'] = $this->Addresses_model->saveAddress($order_data['customer_id'], $address['address_id'], $address);    // send new-address $_POST data and customer id to saveAddress method in Customers model
+                    $_POST['address'][$key]['address_id'] = $address['address_id'] = $this->Addresses_model->saveAddress($order_data['customer_id'], $address['address_id'], $address);    // send new-address $_POST data and customer id to saveAddress method in Customers model
 
                     if (empty($order_data['address_id']) OR $address['address_id'] === $order_data['address_id']) {
                         $order_data['address_id'] = $address['address_id'];
