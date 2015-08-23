@@ -299,7 +299,6 @@ class Orders extends Admin_Controller {
 				'qty' 			=> $cart_item['quantity'],
 				'price' 		=> $this->currency->format($cart_item['price']),
 				'subtotal' 		=> $this->currency->format($cart_item['subtotal']),
-				'comment' 		=> $cart_item['comment'],
 				'options'		=> implode(', ', $option_data)
 			);
 		}
