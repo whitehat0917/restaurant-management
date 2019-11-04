@@ -128,7 +128,7 @@ class Menus_model extends Model
     // Events
     //
 
-    public function afterSave()
+    protected function afterSave()
     {
         $this->restorePurgedValues();
 
@@ -146,7 +146,7 @@ class Menus_model extends Model
             $this->addMenuOption((array)$this->attributes['menu_options']);
     }
 
-    public function beforeDelete()
+    protected function beforeDelete()
     {
         $this->addMenuCategories([]);
         $this->locations()->detach();
@@ -172,7 +172,7 @@ class Menus_model extends Model
      */
     public function updateStock($quantity = 0, $action = 'subtract')
     {
-        if ($this->subtract_stock AND !empty($quantity))
+        if (!$this->subtract_stock)
             return FALSE;
 
         $stockQty = $this->stock_qty + $quantity;
