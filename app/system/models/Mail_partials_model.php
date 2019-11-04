@@ -36,7 +36,7 @@ class Mail_partials_model extends Model
     //
     // Events
     //
-    protected function afterFetch()
+    public function afterFetch()
     {
         if (!$this->is_custom) {
             $this->fillFromCode();

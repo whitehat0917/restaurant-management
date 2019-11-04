@@ -70,7 +70,7 @@ class Themes_model extends Model
     // Events
     //
 
-    protected function afterFetch()
+    public function afterFetch()
     {
         $this->applyThemeManager();
     }

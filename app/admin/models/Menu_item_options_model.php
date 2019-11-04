@@ -82,7 +82,7 @@ class Menu_item_options_model extends Model
     // Events
     //
 
-    protected function afterSave()
+    public function afterSave()
     {
         $this->restorePurgedValues();
 

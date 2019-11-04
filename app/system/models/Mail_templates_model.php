@@ -38,7 +38,7 @@ class Mail_templates_model extends Model
      */
     public $timestamps = TRUE;
 
-    protected function afterFetch()
+    public function afterFetch()
     {
         if (!$this->is_custom) {
             $this->fillFromView();
@@ -53,7 +53,7 @@ class Mail_templates_model extends Model
     {
         $langLabel = !empty($this->attributes['label']) ? $this->attributes['label'] : '';
 
-        return is_lang_key($langLabel) ? lang($langLabel) : $langLabel;
+        return (sscanf($langLabel, 'lang:%s', $lang) === 1) ? lang($langLabel) : $langLabel;
     }
 
     public function getVariablesAttribute($value)

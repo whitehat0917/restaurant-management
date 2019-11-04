@@ -1,7 +1,14 @@
 <?php namespace System\Database\Seeds;
 
+use Admin\Models\Categories_model;
+use Admin\Models\Coupons_model;
+use Admin\Models\Locations_model;
+use Admin\Models\Menu_options_model;
+use Admin\Models\Menus_model;
+use Admin\Models\Tables_model;
+use Admin\Models\Working_hours_model;
+use Eloquent;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class DemoSchemaSeeder extends Seeder
 {
@@ -13,6 +20,8 @@ class DemoSchemaSeeder extends Seeder
      */
     public function run()
     {
+        Eloquent::unguard();
+
         $this->seedDefaultLocation();
 
         $this->seedCategories();
@@ -27,47 +36,43 @@ class DemoSchemaSeeder extends Seeder
     protected function seedDefaultLocation()
     {
         // Abort: a location already exists
-        if (DB::table('locations')->count())
+        if (Locations_model::count())
             return TRUE;
 
         $location = $this->getSeedRecords('location');
         $location['location_email'] = DatabaseSeeder::$siteEmail;
-        $location['options'] = serialize($location['options']);
         $location['delivery_areas'][0]['boundaries']['circle'] = json_encode(
             $location['delivery_areas'][0]['boundaries']['circle']
         );
 
-        $locationId = DB::table('locations')->insertGetId(array_except($location, ['delivery_areas']));
-
-        $this->seedLocationTables($locationId);
+        $location = Locations_model::create($location);
+        
+        $this->seedLocationTables($location);
     }
 
-    protected function seedLocationTables($locationId)
+    protected function seedLocationTables($location)
     {
-        if (DB::table('tables')->count())
+        if (Tables_model::count())
             return;
 
         for ($i = 1; $i < 15; $i++) {
-            $tableId = DB::table('tables')->insertGetId([
+            $table = Tables_model::create([
                 'table_name' => 'Table '.$i,
                 'min_capacity' => random_int(2, 5),
                 'max_capacity' => random_int(6, 12),
                 'table_status' => 1,
             ]);
 
-            DB::table('location_tables')->insert([
-                'location_id' => $locationId,
-                'table_id' => $tableId,
-            ]);
+            $location->tables()->attach($table);
         }
     }
 
-    protected function seedWorkingHours($locationId)
+    protected function seedWorkingHours($location)
     {
         foreach (['opening', 'delivery', 'collection'] as $type) {
             foreach (['0', '1', '2', '3', '4', '5', '6'] as $day) {
-                DB::table('working_hours')->insert([
-                    'location_id' => $locationId,
+                Working_hours_model::insert([
+                    'location_id' => $location->getKey(),
                     'weekday' => $day,
                     'type' => $type,
                     'opening_time' => '00:00',
@@ -80,66 +85,62 @@ class DemoSchemaSeeder extends Seeder
 
     protected function seedCategories()
     {
-        if (DB::table('categories')->count())
+        if (Categories_model::count())
             return;
 
-        DB::table('categories')->insert($this->getSeedRecords('categories'));
+        foreach ($this->getSeedRecords('categories') as $category) {
+            Categories_model::create($category);
+        }
     }
 
     protected function seedMenuOptions()
     {
-        if (DB::table('options')->count())
+        if (Menu_options_model::count())
             return;
 
         foreach ($this->getSeedRecords('menu_options') as $menuOption) {
-            $optionId = DB::table('options')->insertGetId(array_except($menuOption, 'option_values'));
-
-            foreach (array_get($menuOption, 'option_values') as $optionValue) {
-                DB::table('option_values')->insert(array_merge($optionValue, [
-                    'option_id' => $optionId,
-                ]));
-            }
+            Menu_options_model::create($menuOption);
         }
     }
 
     protected function seedMenuItems()
     {
-        if (DB::table('menus')->count())
+        if (Menus_model::count())
             return;
 
         foreach ($this->getSeedRecords('menus') as $menu) {
-            $menuId = DB::table('menus')->insertGetId(array_except($menu, 'menu_options'));
+            $model = Menus_model::create(array_except($menu, 'menu_options'));
 
             foreach (array_get($menu, 'menu_options', []) as $name) {
-                $option = DB::table('options')->where('option_name', $name)->first();
+                $option = Menu_options_model::where('option_name', $name)->first();
 
-                $menuOptionId = DB::table('menu_options')->insertGetId([
-                    'option_id' => $option->option_id,
-                    'menu_id' => $menuId,
-                ]);
-
-                $optionValues = DB::table('option_values')->where('option_id', $option->option_id)->get();
-
-                foreach ($optionValues as $optionValue) {
-                    DB::table('menu_option_values')->insertGetId([
-                        'menu_option_id' => $menuOptionId,
+                $values = [];
+                foreach ($option->option_values as $optionValue) {
+                    $values[] = [
                         'option_value_id' => $optionValue->option_value_id,
                         'new_price' => $optionValue->price,
                         'quantity' => 0,
                         'subtract_stock' => 0,
                         'priority' => $optionValue->priority,
-                    ]);
+                    ];
                 }
+
+                $model->menu_options()->create([
+                    'option_id' => $option->option_id,
+                    'menu_option_values' => $values,
+                ]);
             }
         }
     }
 
     protected function seedCoupons()
     {
-        if (DB::table('coupons')->count())
+        if (Coupons_model::count())
             return;
 
-        DB::table('coupons')->insert($this->getSeedRecords('coupons'));
+        foreach ($this->getSeedRecords('coupons') as $coupon) {
+            Coupons_model::create($coupon);
+        }
     }
 
     protected function getSeedRecords($name)

@@ -1,7 +1,5 @@
 <?php namespace Admin\Models;
 
-use Admin\Traits\HasDeliveryAreas;
-use Admin\Traits\HasWorkingHours;
 use Igniter\Flame\Database\Attach\HasMedia;
 use Igniter\Flame\Database\Traits\HasPermalink;
 use Igniter\Flame\Database\Traits\Purgeable;
@@ -14,8 +12,6 @@ use Igniter\Flame\Location\Models\AbstractLocation;
  */
 class Locations_model extends AbstractLocation
 {
-    use HasWorkingHours;
-    use HasDeliveryAreas;
     use HasPermalink;
     use Purgeable;
     use HasMedia;
@@ -100,22 +96,22 @@ class Locations_model extends AbstractLocation
     // Events
     //
 
-    protected function afterFetch()
+    public function afterFetch()
     {
         $this->parseOptionsValue();
     }
 
-    protected function beforeSave()
+    public function beforeSave()
     {
         $this->parseOptionsValue();
     }
 
-    protected function afterSave()
+    public function afterSave()
     {
         $this->performAfterSave();
     }
 
-    protected function beforeDelete()
+    public function beforeDelete()
     {
         Location_tables_model::where('location_id', $this->getKey())->delete();
     }

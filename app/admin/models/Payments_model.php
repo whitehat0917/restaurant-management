@@ -91,7 +91,7 @@ class Payments_model extends Model
     // Events
     //
 
-    protected function afterFetch()
+    public function afterFetch()
     {
         $this->applyGatewayClass();
 
@@ -99,7 +99,7 @@ class Payments_model extends Model
             $this->attributes = array_merge($this->data, $this->attributes);
     }
 
-    protected function beforeSave()
+    public function beforeSave()
     {
         if (!$this->exists)
             return;

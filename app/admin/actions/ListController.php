@@ -218,7 +218,7 @@ class ListController extends ControllerAction
         if (isset($modelConfig['toolbar']) AND isset($this->controller->widgets['toolbar'])) {
             $this->toolbarWidget = $this->controller->widgets['toolbar'];
             if ($this->toolbarWidget instanceof \Admin\Widgets\Toolbar)
-                $this->toolbarWidget->reInitialize($modelConfig['toolbar']);
+                $this->toolbarWidget->addButtons(array_get($modelConfig['toolbar'], 'buttons', []));
         }
 
         // Prep the optional filter widget

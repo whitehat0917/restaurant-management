@@ -105,12 +105,12 @@ class Customers_model extends AuthUserModel
         ));
     }
 
-    protected function afterCreate()
+    public function afterCreate()
     {
         $this->saveCustomerGuestOrder();
     }
 
-    protected function afterSave()
+    public function afterSave()
     {
         $this->restorePurgedValues();
 

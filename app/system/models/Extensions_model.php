@@ -114,7 +114,7 @@ class Extensions_model extends Model
     // Events
     //
 
-    protected function afterFetch()
+    public function afterFetch()
     {
         $this->applyExtensionClass();
     }
